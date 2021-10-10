@@ -6,3 +6,8 @@ export function getListMovies(size, movies) {
     }
     return restrictedMovies;
 }
+
+export function getRandomMovie(movies) {
+    const index = Math.floor(Math.random() * movies.length);
+    return movies[index];
+}

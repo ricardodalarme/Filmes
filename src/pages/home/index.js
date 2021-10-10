@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, ActivityIndicator } from 'react-native';
 import {
   Container,
   SearchButton,
@@ -14,14 +14,25 @@ import Header from '../../components/header';
 import SliderItem from '../../components/slider_item';
 import { Feather } from '@expo/vector-icons';
 import api, { key } from '../../services/api';
-import { getListMovies } from '../../utils/movie';
+import {
+  getListMovies,
+  getRandomMovie
+} from '../../utils/movie';
+
 function Home() {
   const [nowMovies, setNowMovies] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [topMovies, setTopMovies] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
+  const [bannerMovie, setBannerMovie] = useState({});
+
+
   useEffect(() => {
     let isActive = true;
+    const ac = new AbortController();
+
     async function getMovies() {
       const [nowData, popularData, topData] = await Promise.all([
         api.get(
@@ -60,18 +71,34 @@ function Home() {
           }
         )
       ])
+      if (isActive) {
+        const nowList = getListMovies(10, nowData.data.results);
+        const popularList = getListMovies(5, popularData.data.results);
+        const topList = getListMovies(5, topData.data.results);
 
-      const nowList = getListMovies(10, nowData.data.results);
-      const popularList = getListMovies(5, popularData.data.results);
-      const topList = getListMovies(5, topData.data.results);
-
-      setNowMovies(nowList)
-      setPopularMovies(popularList)
-      setTopMovies(topList)
+        setBannerMovie(getRandomMovie(nowData.data.results));
+        setNowMovies(nowList)
+        setPopularMovies(popularList)
+        setTopMovies(topList)
+        setLoading(false);
+      }
     }
     getMovies();
+
+    return () => {
+      isActive = false;
+      ac.abort();
+    }
   }, [])
 
+  if (loading) {
+    return (<Container>
+      <ActivityIndicator
+        size="large"
+        color="FFF"
+      />
+    </Container>)
+  }
   return (
     <Container>
       <Header title="Home" />
@@ -101,7 +128,8 @@ function Home() {
           <Banner
             resizeMethod="resize"
             source={{
-              uri: 'https://ingresso-a.akamaihd.net/prd/img/movie/shang-chi-e-a-lenda-dos-dez-aneis/99cd42d9-5d27-4a96-aa28-c5bf4c9b6fb5.jpg'
+              uri: `https://image.tmdb.org/t/p/original/${bannerMovie.poster_path}`
+
             }}
           />
         </BannerButton>

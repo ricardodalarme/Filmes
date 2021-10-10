@@ -31,3 +31,28 @@ export const Input = styled.TextInput`
     font-size: 18px;
     color: #FFF;
 `;
+
+export const Title = styled.Text`
+    padding-top: 20px;
+    padding-bottom: 8px;
+    font-size: 24px;
+    color: #fff;
+    font-weight: bold;
+    padding-left: 14;
+    padding-right: 14;
+`;
+
+export const BannerButton = styled.TouchableOpacity`
+
+`;
+
+export const Banner = styled.Image`
+    height:150px;
+    border-radius:6px;
+    margin: 0 14px;
+`;
+
+export const SliderMovie = styled.FlatList`
+    height: 250px;
+    padding: 0 14px;
+`
